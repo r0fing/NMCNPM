@@ -4,12 +4,19 @@
  */
 package view.item;
 
+import dao.ItemStatsDAO;
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
+import model.ItemStats;
 import model.User;
 import view.user.StatsFrm;
 
@@ -18,37 +25,100 @@ import view.user.StatsFrm;
  * @author HLC_2021
  */
 public class ItemStatsFrm extends javax.swing.JFrame implements ActionListener {
-    private User user;
+    private User u;
+    private ArrayList<ItemStats> resultList = null;
+    private Date start = null;
+    private Date end = null;
+    
     /**
      * Creates new form ItemStatsFrm
      * @param user
      */
-    public ItemStatsFrm(User user) {
-        this.user = user;
+    public ItemStatsFrm(User u) {
+        this.u = u;
         initComponents();
         tblListItemStats.getTableHeader().setFont(new Font("Segoe UI", Font.BOLD, 14));
         tblListItemStats.getTableHeader().setBackground(new Color(193,218,243));
-        tblListItemStats.getTableHeader().setAlignmentX(Component.CENTER_ALIGNMENT);
         btnView.addActionListener(this);
         btnReturnToStatsView.addActionListener(this);
         btnNext.addActionListener(this);
     }
 
+    public String formatDate(String dateStr) {
+        String[] parts = dateStr.trim().split("[/]");
+        if (parts.length != 3) return null;
+
+        try {
+            int day = Integer.parseInt(parts[0]);
+            int month = Integer.parseInt(parts[1]);
+            int year = Integer.parseInt(parts[2]);
+
+            // Use Calendar to check validity
+            Calendar cal = Calendar.getInstance();
+            cal.setLenient(false);
+            cal.set(Calendar.YEAR, year);
+            cal.set(Calendar.MONTH, month - 1); // Months are 0-based
+            cal.set(Calendar.DAY_OF_MONTH, day);
+            cal.getTime(); // Throws exception if invalid
+
+            return String.format("%04d-%02d-%02d", year, month, day);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    
     @Override
     public void actionPerformed(ActionEvent e) {
+        
         if (e.getSource() == btnView) {
-            String startDate = txtStartDate.getText();
-            String endDate = txtEndDate.getText();
-            if (startDate.compareTo(endDate) > 0) {
-                JOptionPane.showMessageDialog(this, "Invalid date format!", "Error", JOptionPane.ERROR_MESSAGE);
+            String startDate = formatDate(txtStartDate.getText());
+            String endDate = formatDate(txtEndDate.getText());
+
+            if (startDate == null || endDate == null) {
+                JOptionPane.showMessageDialog(null, "Invalid date format.", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            try {
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+                sdf.setLenient(false);
+                start = sdf.parse(startDate);
+                end = sdf.parse(endDate);
+
+                if (start.after(end)) {
+                    JOptionPane.showMessageDialog(null, "Start date must be before or equal to end date.", "Error", JOptionPane.WARNING_MESSAGE);
+                    return;
+                }
+                resultList = new ItemStatsDAO().getItemStats(start, end);
+                if (resultList.isEmpty()) {
+                    JOptionPane.showMessageDialog(null, "No item found within the time period!", "Error", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+                
+                DefaultTableModel model = (DefaultTableModel)tblListItemStats.getModel();
+                model.setRowCount(0);
+                for (ItemStats i : resultList) {
+                    model.addRow(new Object[]{
+                        i.getId(), i.getItemName(), i.getTotalQuantitySold(), i.getTotalRevenue()
+                    });
+                }
+                
+            } catch (ParseException ex) {
+                JOptionPane.showMessageDialog(null, "Date parsing failed.", "Error", JOptionPane.ERROR_MESSAGE);
             }
         } else if (e.getSource() == btnReturnToStatsView) {
-            StatsFrm statsFrm = new StatsFrm(user);
+            StatsFrm statsFrm = new StatsFrm(u);
             statsFrm.setLocation(this.getLocation());
             statsFrm.setVisible(true);
             this.dispose();
         } else if (e.getSource() == btnNext) {
-            
+            if (tblListItemStats.getSelectedRow() != -1) {
+                InvoiceFrm invoiceFrm = new InvoiceFrm(u, resultList.get(tblListItemStats.getSelectedRow()), start, end);
+                invoiceFrm.setLocation(this.getLocation());
+                invoiceFrm.setVisible(true);
+                this.dispose();
+            } else JOptionPane.showMessageDialog(null, "You did not select any rows.", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
     
@@ -66,21 +136,21 @@ public class ItemStatsFrm extends javax.swing.JFrame implements ActionListener {
         lblEndDate = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
         tblListItemStats = new javax.swing.JTable();
-        txtStartDate = new javax.swing.JFormattedTextField();
-        txtEndDate = new javax.swing.JFormattedTextField();
         btnView = new javax.swing.JButton();
         btnReturnToStatsView = new javax.swing.JButton();
         btnNext = new javax.swing.JButton();
+        txtStartDate = new javax.swing.JTextField();
+        txtEndDate = new javax.swing.JTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
-        lblDateEnter.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        lblDateEnter.setText("Please enter the date:");
+        lblDateEnter.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        lblDateEnter.setText("Please enter the date (day/month/year format):");
 
-        lblStartDate.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        lblStartDate.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         lblStartDate.setText("Start date:");
 
-        lblEndDate.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        lblEndDate.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         lblEndDate.setText("End date:");
 
         tblListItemStats.setBackground(new java.awt.Color(193, 218, 243));
@@ -108,8 +178,8 @@ public class ItemStatsFrm extends javax.swing.JFrame implements ActionListener {
                 return canEdit [columnIndex];
             }
         });
-        tblListItemStats.setColumnSelectionAllowed(true);
         tblListItemStats.setSelectionBackground(new java.awt.Color(153, 204, 255));
+        tblListItemStats.setShowGrid(false);
         tblListItemStats.getTableHeader().setReorderingAllowed(false);
         jScrollPane1.setViewportView(tblListItemStats);
         tblListItemStats.getColumnModel().getSelectionModel().setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
@@ -119,16 +189,6 @@ public class ItemStatsFrm extends javax.swing.JFrame implements ActionListener {
             tblListItemStats.getColumnModel().getColumn(2).setPreferredWidth(10);
             tblListItemStats.getColumnModel().getColumn(3).setPreferredWidth(40);
         }
-
-        txtStartDate.setBackground(new java.awt.Color(193, 218, 243));
-        txtStartDate.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.DateFormatter(java.text.DateFormat.getDateInstance(java.text.DateFormat.SHORT))));
-        txtStartDate.setText("dd/mm/yyyy");
-        txtStartDate.setToolTipText("");
-        txtStartDate.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-
-        txtEndDate.setBackground(new java.awt.Color(193, 218, 243));
-        txtEndDate.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.DateFormatter(java.text.DateFormat.getDateInstance(java.text.DateFormat.SHORT))));
-        txtEndDate.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
 
         btnView.setBackground(new java.awt.Color(193, 218, 243));
         btnView.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
@@ -144,37 +204,36 @@ public class ItemStatsFrm extends javax.swing.JFrame implements ActionListener {
         btnNext.setText("Next");
         btnNext.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
 
+        txtStartDate.setBackground(new java.awt.Color(193, 218, 243));
+
+        txtEndDate.setBackground(new java.awt.Color(193, 218, 243));
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap(35, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(16, 16, 16)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(lblDateEnter)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                            .addComponent(lblDateEnter)
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(lblStartDate)
                                 .addGap(18, 18, 18)
                                 .addComponent(txtStartDate, javax.swing.GroupLayout.PREFERRED_SIZE, 142, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(39, 39, 39)
+                                .addGap(43, 43, 43)
                                 .addComponent(lblEndDate)
                                 .addGap(18, 18, 18)
-                                .addComponent(txtEndDate, javax.swing.GroupLayout.PREFERRED_SIZE, 142, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(37, 37, 37)
-                                .addComponent(btnView, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
-                    .addGroup(layout.createSequentialGroup()
-                        .addContainerGap(31, Short.MAX_VALUE)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(btnReturnToStatsView, javax.swing.GroupLayout.PREFERRED_SIZE, 78, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(482, 482, 482)
-                                .addComponent(btnNext, javax.swing.GroupLayout.PREFERRED_SIZE, 78, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 638, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                .addGap(30, 30, 30))
+                                .addComponent(txtEndDate, javax.swing.GroupLayout.PREFERRED_SIZE, 142, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(btnView, javax.swing.GroupLayout.PREFERRED_SIZE, 78, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addComponent(btnReturnToStatsView, javax.swing.GroupLayout.PREFERRED_SIZE, 78, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(btnNext, javax.swing.GroupLayout.PREFERRED_SIZE, 78, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 638, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(37, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -185,12 +244,12 @@ public class ItemStatsFrm extends javax.swing.JFrame implements ActionListener {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(lblStartDate)
                     .addComponent(lblEndDate)
+                    .addComponent(btnView, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(txtStartDate, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(txtEndDate, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnView, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(60, 60, 60)
+                    .addComponent(txtEndDate, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 57, Short.MAX_VALUE)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 243, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 30, Short.MAX_VALUE)
+                .addGap(33, 33, 33)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnReturnToStatsView, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btnNext, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -211,8 +270,8 @@ public class ItemStatsFrm extends javax.swing.JFrame implements ActionListener {
     private javax.swing.JLabel lblEndDate;
     private javax.swing.JLabel lblStartDate;
     private javax.swing.JTable tblListItemStats;
-    private javax.swing.JFormattedTextField txtEndDate;
-    private javax.swing.JFormattedTextField txtStartDate;
+    private javax.swing.JTextField txtEndDate;
+    private javax.swing.JTextField txtStartDate;
     // End of variables declaration//GEN-END:variables
 
     

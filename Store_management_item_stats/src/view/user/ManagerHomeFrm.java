@@ -14,13 +14,13 @@ import model.User;
  * @author HLC_2021
  */
 public class ManagerHomeFrm extends javax.swing.JFrame implements ActionListener {
-    private User user;
+    private User u;
     /**
      * Creates new form ManagerHomeFrm
-     * @param user
+     * @param u
      */
-    public ManagerHomeFrm(User user) {
-        this.user = user;
+    public ManagerHomeFrm(User u) {
+        this.u = u;
         initComponents();
         btnViewStats.addActionListener(this);
         btnLogout.addActionListener(this);
@@ -29,7 +29,7 @@ public class ManagerHomeFrm extends javax.swing.JFrame implements ActionListener
     @Override
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == btnViewStats) {
-            StatsFrm statsFrm = new StatsFrm(user);
+            StatsFrm statsFrm = new StatsFrm(u);
             statsFrm.setLocation(this.getLocation());
             statsFrm.setVisible(true);
             this.dispose();
@@ -59,10 +59,11 @@ public class ManagerHomeFrm extends javax.swing.JFrame implements ActionListener
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
-        lblManagerHome.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        lblManagerHome.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
         lblManagerHome.setText("Manager Home");
 
-        lblName.setText(user.getName());
+        lblName.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        lblName.setText(u.getName());
         lblName.setToolTipText("");
         lblName.setVerticalAlignment(javax.swing.SwingConstants.BOTTOM);
 

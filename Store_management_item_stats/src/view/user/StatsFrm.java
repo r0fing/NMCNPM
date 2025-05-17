@@ -15,13 +15,13 @@ import view.item.ItemStatsFrm;
  * @author HLC_2021
  */
 public class StatsFrm extends javax.swing.JFrame implements ActionListener {
-    private User user;
+    private User u;
     /**
      * Creates new form StatsFrm
-     * @param user
+     * @param u
      */
-    public StatsFrm(User user) {
-        this.user = user;
+    public StatsFrm(User u) {
+        this.u = u;
         initComponents();
         btnViewItemStats.addActionListener(this);
         btnReturnToManagerHomeView.addActionListener(this);
@@ -30,12 +30,12 @@ public class StatsFrm extends javax.swing.JFrame implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == btnViewItemStats) {
-            ItemStatsFrm itemStatsFrm = new ItemStatsFrm(user);
+            ItemStatsFrm itemStatsFrm = new ItemStatsFrm(u);
             itemStatsFrm.setLocation(this.getLocation());
             itemStatsFrm.setVisible(true);
             this.dispose();
         } else if (e.getSource() == btnReturnToManagerHomeView) {
-            ManagerHomeFrm managerHomeFrm = new ManagerHomeFrm(user);
+            ManagerHomeFrm managerHomeFrm = new ManagerHomeFrm(u);
             managerHomeFrm.setLocation(this.getLocation());
             managerHomeFrm.setVisible(true);
             this.dispose();
@@ -59,7 +59,7 @@ public class StatsFrm extends javax.swing.JFrame implements ActionListener {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
-        lblStatistic.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        lblStatistic.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
         lblStatistic.setText("Statistic");
 
         btnViewItemStats.setBackground(new java.awt.Color(193, 218, 243));
