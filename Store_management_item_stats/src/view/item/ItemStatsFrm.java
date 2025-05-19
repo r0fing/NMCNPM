@@ -32,7 +32,7 @@ public class ItemStatsFrm extends javax.swing.JFrame implements ActionListener {
     
     /**
      * Creates new form ItemStatsFrm
-     * @param user
+     * @param u
      */
     public ItemStatsFrm(User u) {
         this.u = u;
@@ -52,6 +52,9 @@ public class ItemStatsFrm extends javax.swing.JFrame implements ActionListener {
             int day = Integer.parseInt(parts[0]);
             int month = Integer.parseInt(parts[1]);
             int year = Integer.parseInt(parts[2]);
+            if (year < 1000 || year > 9999) {
+                return null;
+            }
 
             // Use Calendar to check validity
             Calendar cal = Calendar.getInstance();
@@ -85,7 +88,7 @@ public class ItemStatsFrm extends javax.swing.JFrame implements ActionListener {
                 sdf.setLenient(false);
                 start = sdf.parse(startDate);
                 end = sdf.parse(endDate);
-
+                
                 if (start.after(end)) {
                     JOptionPane.showMessageDialog(null, "Start date must be before or equal to end date.", "Error", JOptionPane.WARNING_MESSAGE);
                     return;
@@ -193,6 +196,7 @@ public class ItemStatsFrm extends javax.swing.JFrame implements ActionListener {
         btnView.setBackground(new java.awt.Color(193, 218, 243));
         btnView.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         btnView.setText("View");
+        btnView.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
 
         btnReturnToStatsView.setBackground(new java.awt.Color(193, 218, 243));
         btnReturnToStatsView.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
@@ -205,8 +209,10 @@ public class ItemStatsFrm extends javax.swing.JFrame implements ActionListener {
         btnNext.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
 
         txtStartDate.setBackground(new java.awt.Color(193, 218, 243));
+        txtStartDate.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
 
         txtEndDate.setBackground(new java.awt.Color(193, 218, 243));
+        txtEndDate.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);

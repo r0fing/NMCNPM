@@ -24,7 +24,11 @@ public class ItemStatsDAO extends DAO {
     
     public ArrayList<ItemStats> getItemStats(Date sd, Date ed) {
         ArrayList<ItemStats> result = new ArrayList<>();
-        String sql = "select tI.id, itemName, itemDescription, sum(quantity) as quantity_sold, sum(quantity * itemPrice) as revenue from tblItem tI join tblInvoiceItem tII on tII.tblItemid=tI.id join tblInvoice tInv on tInv.id=tII.tblInvoiceid and dateIssue between ? and ? group by tI.id order by revenue desc";
+        String sql = "select tI.id, itemName, itemDescription, sum(quantity) as quantity_sold, sum(quantity * itemPrice) as revenue "
+                + "from tblItem tI "
+                + "join tblInvoiceItem tII on tII.tblItemid=tI.id "
+                + "join tblInvoice tInv on tInv.id=tII.tblInvoiceid and dateIssue between ? and ? "
+                + "group by tI.id order by revenue desc";
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         try {
             PreparedStatement ps = con.prepareStatement(sql);

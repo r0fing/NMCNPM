@@ -111,10 +111,12 @@ public class InvoiceFrm extends javax.swing.JFrame implements ActionListener {
         btnReturnToItemStatsView.setBackground(new java.awt.Color(193, 218, 243));
         btnReturnToItemStatsView.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         btnReturnToItemStatsView.setText("Return");
+        btnReturnToItemStatsView.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
 
         btnReturnToHomeScreen.setBackground(new java.awt.Color(193, 218, 243));
         btnReturnToHomeScreen.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         btnReturnToHomeScreen.setText("Home");
+        btnReturnToHomeScreen.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
 
         tblListInvoices.setBackground(new java.awt.Color(193, 218, 243));
         tblListInvoices.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
