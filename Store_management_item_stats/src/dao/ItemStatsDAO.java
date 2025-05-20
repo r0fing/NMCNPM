@@ -24,16 +24,30 @@ public class ItemStatsDAO extends DAO {
     
     public ArrayList<ItemStats> getItemStats(Date sd, Date ed) {
         ArrayList<ItemStats> result = new ArrayList<>();
-        String sql = "select tI.id, itemName, itemDescription, sum(quantity) as quantity_sold, sum(quantity * itemPrice) as revenue "
-                + "from tblItem tI "
-                + "join tblInvoiceItem tII on tII.tblItemid=tI.id "
-                + "join tblInvoice tInv on tInv.id=tII.tblInvoiceid and dateIssue between ? and ? "
-                + "group by tI.id order by revenue desc";
+        String sql = "SELECT " +
+                    "tI.id, " +
+                    "itemName, " +
+                    "itemDescription, " +
+                    "COALESCE(SUM(CASE " +
+                    "WHEN dateIssue BETWEEN ? AND ? THEN quantity " +
+                    "ELSE 0 END), 0) AS quantity_sold, " +
+                    "COALESCE(SUM(CASE " +
+                    "WHEN dateIssue BETWEEN ? AND ? THEN quantity * itemPrice " +
+                    "ELSE 0 END), 0) AS revenue " +
+                    "FROM tblItem tI " +
+                    "LEFT JOIN tblInvoiceItem tII " +
+                    "ON tII.tblItemid = tI.id " +
+                    "LEFT JOIN tblInvoice tInv " +
+                    "ON tInv.id = tII.tblInvoiceid " +
+                    "GROUP BY tI.id, itemName, itemDescription " +
+                    "ORDER BY revenue DESC;";
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         try {
             PreparedStatement ps = con.prepareStatement(sql);
             ps.setString(1, sdf.format(sd));
             ps.setString(2, sdf.format(ed));
+            ps.setString(3, sdf.format(sd));
+            ps.setString(4, sdf.format(ed));
             ResultSet rs = ps.executeQuery();
             
             while(rs.next()) {

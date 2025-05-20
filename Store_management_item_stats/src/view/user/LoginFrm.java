@@ -41,11 +41,6 @@ public class LoginFrm extends javax.swing.JFrame implements ActionListener {
                     managerHomeFrm.setVisible(true);
                     this.dispose();
                 }
-//                    else if(user.getRole().equalsIgnoreCase("Stock clerk")) {
-//                        JOptionPane.showMessageDialog(this, "Login success!", "Success!", JOptionPane.INFORMATION_MESSAGE);
-//                        //(new ManagerHomeFrm()).setVisible(true);
-//                        this.dispose();
-//                    }
                 else
                     JOptionPane.showMessageDialog(this, "The function of the role " + u.getRole() + " is under construction!");
             }else {

@@ -54,15 +54,12 @@ public class InvoiceDAO extends DAO {
                 Invoice i = new Invoice();
                 i.setId(rs.getInt("idInvoice"));
                 i.setDateIssued(rs.getDate("dateIssue"));
-                i.setSubagenceName(rs.getString("brandName"));
-                //Subagence
                 Subagence s = new Subagence();
                 s.setId(rs.getInt("idSubagence"));
                 s.setBrandName(rs.getString("brandName"));
                 s.setAddress(rs.getString("address"));
                 s.setPhoneNumber(rs.getString("phoneNumber"));
                 i.setSubagence(s);
-                //Invoiceitem
                 InvoiceItem ii = new InvoiceItem();
                 ii.setId(rs.getInt("idInvoiceItem"));
                 ii.setQuantity(rs.getInt("quantity"));

@@ -25,6 +25,7 @@ import view.user.ManagerHomeFrm;
 public class InvoiceFrm extends javax.swing.JFrame implements ActionListener {
     private User u;
     private ItemStats is;
+    private ItemStatsFrm isf;
     /**
      * Creates new form InvoiceFrm
      * @param u
@@ -32,7 +33,8 @@ public class InvoiceFrm extends javax.swing.JFrame implements ActionListener {
      * @param sd
      * @param ed
      */
-    public InvoiceFrm(User u, ItemStats is, Date sd, Date ed) {
+    public InvoiceFrm(ItemStatsFrm isf, User u, ItemStats is, Date sd, Date ed) {
+        this.isf = isf;
         this.u = u;
         this.is = is;
         initComponents();
@@ -47,7 +49,7 @@ public class InvoiceFrm extends javax.swing.JFrame implements ActionListener {
         for (Invoice i : resultList) {
             InvoiceItem ii = i.getInvoiceItem().get(0);
             model.addRow(new Object[]{
-                i.getId(), i.getSubagence().getId(), i.getSubagenceName(), sdf.format(i.getDateIssued()), ii.getQuantity() * ii.getItemPrice(), ii.getQuantity()
+                i.getId(), i.getSubagence().getId(), i.getSubagence().getBrandName(), sdf.format(i.getDateIssued()), ii.getQuantity() * ii.getItemPrice(), ii.getQuantity()
             });
         }
     }
@@ -55,9 +57,7 @@ public class InvoiceFrm extends javax.swing.JFrame implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == btnReturnToItemStatsView) {
-            ItemStatsFrm itemStatsFrm = new ItemStatsFrm(u);
-            itemStatsFrm.setLocation(this.getLocation());
-            itemStatsFrm.setVisible(true);
+            isf.setVisible(true);
             this.dispose();
         }
         else if (e.getSource() == btnReturnToHomeScreen) {

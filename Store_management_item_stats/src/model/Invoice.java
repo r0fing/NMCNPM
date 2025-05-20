@@ -13,7 +13,6 @@ import java.util.Date;
  */
 public class Invoice {
     private int id;
-    private String subagenceName;
     private Date dateIssued;
     private int numberOfItems;
     private User user;
@@ -30,13 +29,6 @@ public class Invoice {
         this.id = id;
     }
 
-    public String getSubagenceName() {
-        return subagenceName;
-    }
-
-    public void setSubagenceName(String subagenceName) {
-        this.subagenceName = subagenceName;
-    }
 
     public Date getDateIssued() {
         return dateIssued;

@@ -44,25 +44,20 @@ public class ItemStatsFrm extends javax.swing.JFrame implements ActionListener {
         btnNext.addActionListener(this);
     }
 
-    public String formatDate(String dateStr) {
+    private String formatDate(String dateStr) {
         String[] parts = dateStr.trim().split("[/]");
-        if (parts.length != 3) return null;
+        if (parts.length != 3 || parts[0].length() != 2 || parts[1].length() != 2 || parts[2].length() != 4) return null;
 
         try {
             int day = Integer.parseInt(parts[0]);
             int month = Integer.parseInt(parts[1]);
             int year = Integer.parseInt(parts[2]);
-            if (year < 1000 || year > 9999) {
-                return null;
-            }
 
-            // Use Calendar to check validity
             Calendar cal = Calendar.getInstance();
             cal.setLenient(false);
             cal.set(Calendar.YEAR, year);
-            cal.set(Calendar.MONTH, month - 1); // Months are 0-based
+            cal.set(Calendar.MONTH, month - 1);
             cal.set(Calendar.DAY_OF_MONTH, day);
-            cal.getTime(); // Throws exception if invalid
 
             return String.format("%04d-%02d-%02d", year, month, day);
         } catch (Exception e) {
@@ -79,7 +74,7 @@ public class ItemStatsFrm extends javax.swing.JFrame implements ActionListener {
             String endDate = formatDate(txtEndDate.getText());
 
             if (startDate == null || endDate == null) {
-                JOptionPane.showMessageDialog(null, "Invalid date format.", "Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(null, "Incorrect date entered. Please enter the dd/mm/yyyy format and make sure you entered in all the boxes.", "Error", JOptionPane.ERROR_MESSAGE);
                 return;
             }
 
@@ -117,10 +112,10 @@ public class ItemStatsFrm extends javax.swing.JFrame implements ActionListener {
             this.dispose();
         } else if (e.getSource() == btnNext) {
             if (tblListItemStats.getSelectedRow() != -1) {
-                InvoiceFrm invoiceFrm = new InvoiceFrm(u, resultList.get(tblListItemStats.getSelectedRow()), start, end);
+                InvoiceFrm invoiceFrm = new InvoiceFrm(this, u, resultList.get(tblListItemStats.getSelectedRow()), start, end);
                 invoiceFrm.setLocation(this.getLocation());
                 invoiceFrm.setVisible(true);
-                this.dispose();
+                this.setVisible(false);
             } else JOptionPane.showMessageDialog(null, "You did not select any rows.", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
@@ -148,7 +143,7 @@ public class ItemStatsFrm extends javax.swing.JFrame implements ActionListener {
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
         lblDateEnter.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
-        lblDateEnter.setText("Please enter the date (day/month/year format):");
+        lblDateEnter.setText("Please enter the date (dd/mm/yyyy format):");
 
         lblStartDate.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         lblStartDate.setText("Start date:");
@@ -254,8 +249,8 @@ public class ItemStatsFrm extends javax.swing.JFrame implements ActionListener {
                     .addComponent(txtStartDate, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(txtEndDate, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 57, Short.MAX_VALUE)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 243, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(33, 33, 33)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 250, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(26, 26, 26)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnReturnToStatsView, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btnNext, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
