@@ -68,7 +68,6 @@ public class ItemStatsFrm extends javax.swing.JFrame implements ActionListener {
     
     @Override
     public void actionPerformed(ActionEvent e) {
-        
         if (e.getSource() == btnView) {
             String startDate = formatDate(txtStartDate.getText());
             String endDate = formatDate(txtEndDate.getText());
@@ -83,7 +82,6 @@ public class ItemStatsFrm extends javax.swing.JFrame implements ActionListener {
                 sdf.setLenient(false);
                 start = sdf.parse(startDate);
                 end = sdf.parse(endDate);
-                
                 if (start.after(end)) {
                     JOptionPane.showMessageDialog(null, "Start date must be before or equal to end date.", "Error", JOptionPane.WARNING_MESSAGE);
                     return;
@@ -93,7 +91,7 @@ public class ItemStatsFrm extends javax.swing.JFrame implements ActionListener {
                     JOptionPane.showMessageDialog(null, "No item found within the time period!", "Error", JOptionPane.ERROR_MESSAGE);
                     return;
                 }
-                
+
                 DefaultTableModel model = (DefaultTableModel)tblListItemStats.getModel();
                 model.setRowCount(0);
                 for (ItemStats i : resultList) {
@@ -101,7 +99,7 @@ public class ItemStatsFrm extends javax.swing.JFrame implements ActionListener {
                         i.getId(), i.getItemName(), i.getTotalQuantitySold(), i.getTotalRevenue()
                     });
                 }
-                
+
             } catch (ParseException ex) {
                 JOptionPane.showMessageDialog(null, "Date parsing failed.", "Error", JOptionPane.ERROR_MESSAGE);
             }
@@ -111,12 +109,15 @@ public class ItemStatsFrm extends javax.swing.JFrame implements ActionListener {
             statsFrm.setVisible(true);
             this.dispose();
         } else if (e.getSource() == btnNext) {
-            if (tblListItemStats.getSelectedRow() != -1) {
-                InvoiceFrm invoiceFrm = new InvoiceFrm(this, u, resultList.get(tblListItemStats.getSelectedRow()), start, end);
+            int index = tblListItemStats.getSelectedRow();
+            if (index != -1) {
+                InvoiceFrm invoiceFrm = new InvoiceFrm(this, u, resultList.get(index), start, end);
                 invoiceFrm.setLocation(this.getLocation());
                 invoiceFrm.setVisible(true);
-                this.setVisible(false);
-            } else JOptionPane.showMessageDialog(null, "You did not select any rows.", "Error", JOptionPane.ERROR_MESSAGE);
+                this.dispose();
+            } else  {
+                JOptionPane.showMessageDialog(null, "You did not select any rows.", "Error", JOptionPane.ERROR_MESSAGE);
+            }
         }
     }
     

@@ -11,14 +11,14 @@ INSERT INTO tblSubagence (brandName, address, phoneNumber) VALUES
 ('D Mart', '336 Hai Ba Trung, District 1, Ho Chi Minh', '0912398765'),
 ('E Store', '89 Lac Long Quan, Cau Giay, Ha Noi', '0987125432');
 
-INSERT INTO tblItem (itemName, itemDescription) VALUES
-('Laptop', 'Portable computer'),
-('Washing machine', 'Machine used to wash clothes'),
-('Printer', 'Machine that produces physical copies of digital documents or images'),
-('Wireless mouse', 'Computer mouse that operates without a physical cable'),
-('Router WiFi', 'Device that provides a wireless internet connection'),
-('Electric kettle', 'Kitchen appliance used to quickly boil water using electricity'),
-('Blender', 'Kitchen appliance used to mix, puree, or emulsify food and liquid');
+INSERT INTO tblItem (itemName, itemDescription, itemPrice) VALUES
+('Laptop', 'Portable computer', 15),
+('Washing machine', 'Machine used to wash clothes', 20),
+('Printer', 'Machine that produces physical copies of digital documents or images', 15),
+('Wireless mouse', 'Computer mouse that operates without a physical cable', 2),
+('Router WiFi', 'Device that provides a wireless internet connection', 3),
+('Electric kettle', 'Kitchen appliance used to quickly boil water using electricity', 1),
+('Blender', 'Kitchen appliance used to mix, puree, or emulsify food and liquid', 2);
 
 INSERT INTO tblInvoice (dateIssue, tblUserid, tblSubagenceid) VALUES
 ('2025-01-18', 3, 4),

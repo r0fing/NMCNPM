@@ -3,6 +3,7 @@ CREATE TABLE tblItem (
     id INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
     itemName VARCHAR(255),
     itemDescription VARCHAR(255),
+    itemPrice FLOAT(10),
     PRIMARY KEY (id)
 );
 

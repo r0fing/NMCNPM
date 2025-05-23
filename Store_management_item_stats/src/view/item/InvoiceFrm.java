@@ -28,6 +28,7 @@ public class InvoiceFrm extends javax.swing.JFrame implements ActionListener {
     private ItemStatsFrm isf;
     /**
      * Creates new form InvoiceFrm
+     * @param isf
      * @param u
      * @param is
      * @param sd

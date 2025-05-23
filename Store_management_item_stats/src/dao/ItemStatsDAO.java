@@ -28,12 +28,8 @@ public class ItemStatsDAO extends DAO {
                     "tI.id, " +
                     "itemName, " +
                     "itemDescription, " +
-                    "COALESCE(SUM(CASE " +
-                    "WHEN dateIssue BETWEEN ? AND ? THEN quantity " +
-                    "ELSE 0 END), 0) AS quantity_sold, " +
-                    "COALESCE(SUM(CASE " +
-                    "WHEN dateIssue BETWEEN ? AND ? THEN quantity * itemPrice " +
-                    "ELSE 0 END), 0) AS revenue " +
+                    "COALESCE(SUM(CASE WHEN dateIssue BETWEEN ? AND ? THEN quantity ELSE 0 END), 0) AS quantity_sold, " +
+                    "COALESCE(SUM(CASE WHEN dateIssue BETWEEN ? AND ? THEN quantity * tII.itemPrice ELSE 0 END), 0) AS revenue " +
                     "FROM tblItem tI " +
                     "LEFT JOIN tblInvoiceItem tII " +
                     "ON tII.tblItemid = tI.id " +

@@ -14,6 +14,7 @@ public class Item implements Serializable {
     private int id;
     private String itemName;
     private String itemDescription;
+    private float itemPrice;
 
     public int getId() {
         return id;
@@ -38,4 +39,14 @@ public class Item implements Serializable {
     public void setItemDescription(String itemDescription) {
         this.itemDescription = itemDescription;
     }
+
+    public float getItemPrice() {
+        return itemPrice;
+    }
+
+    public void setItemPrice(float itemPrice) {
+        this.itemPrice = itemPrice;
+    }
+    
+    
 }
